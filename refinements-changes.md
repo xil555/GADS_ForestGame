@@ -1,0 +1,6 @@
+# Scope Changes & AI-Assisted Decisions Log
+
+* **Shift from Static to Dynamic Dialogue:** Initially, the plan was to use pre-written, randomized dialogue arrays. Upon reviewing the POE requirements for functional LLM integration, this was scrapped. I implemented a dynamic API bridge using `UnityWebRequest` to parse JSON from Ollama in real-time.
+* **Model Optimization:** Started with `llama3` but encountered memory overhead and 500 Internal Server errors when running simultaneously with Unity. Switched the system to `phi3` for faster inference, lower latency, and better hardware compatibility.
+* **Tension Mechanics (The 3-Question Limit):** To better integrate the LLM into the actual gameplay loop rather than just being a chat bot, I added an interrogation mechanic. The player can only ask 3 questions before the UI locks out. This forces a high-stakes decision (Trust/Turn Away) before nightfall.
+* **Input Collision Fix:** Encountered an issue where typing 'W' or 'Y' in the UI text box would trigger the player controller or the Trust hotkey. Refactored the `GameManager.Update()` loop to ignore hotkeys while `playerInputField.isFocused` is true, and temporarily disabled the `FirstPersonController` during the Day Phase.
