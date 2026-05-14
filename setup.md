@@ -10,13 +10,16 @@ To run this project, you must have Ollama installed locally.
 
 ## 2. Unity Configuration
 - Open the Unity project.
-- Ensure the `OllamaController` GameObject in the scene has the `OllamaIntegration.cs` script attached.
+- Ensure the `GameManager` GameObject is configured with the `OllamaManager.cs` script attached.
 - The **Model Name** field in the Inspector MUST be set to exactly: `phi3`.
 - The default local API endpoint is configured to `http://localhost:11434/api/generate`.
 
-## 3. How to Play/Test
+## 3. How to Play
 - Press **Play** in the Unity Editor.
-- When an NPC approaches the cabin, use the on-screen input field to type questions.
-- Press **Enter** to ask the question. Wait for the LLM to process and respond.
-- You have a strict limit of 3 questions before night falls.
-- Press **Y** to Trust the NPC, or **N** to Turn them Away.
+- Complete daily resource tasks (logs, mushrooms, water, fence repair).
+- At **13:00 (1:00 PM)** in-game time every day, an NPC will spawn in the forest and walk to the cabin door.
+- Walk up to the NPC and press **T** to initiate the interrogation. In-game time will pause.
+- Type questions in the UI to figure out their intent. You are limited to 3 questions.
+- Press **X** at any time to walk away, resume time, and finish your tasks. You can return to the NPC and press **T** to resume the conversation without losing memory.
+- Press **Y** to Trust the NPC, or **N** to Turn them Away. 
+- **Win Condition:** Survive 3 days. Trusting a dangerous NPC results in instant death.

@@ -8,6 +8,9 @@ public class TimeController : MonoBehaviour
     [SerializeField]
     private float timeMultipler;
 
+    public bool isPaused = false;
+
+
 
     [SerializeField]
     [Tooltip("In-game time when the scene starts (0–24). Use 12 for noon.")]
@@ -17,6 +20,7 @@ public class TimeController : MonoBehaviour
     private TextMeshProUGUI timeText;
 
     private DateTime currentTime;
+    public DateTime CurrentTime => currentTime; 
 
     [SerializeField]
     private Light sunLight;
@@ -65,6 +69,7 @@ public class TimeController : MonoBehaviour
 
     void Update()
     {
+        if (isPaused) return;
         UpdateTimeOfDay();
         RotateSun();
         UpdateLightSettings();
