@@ -1,8 +1,10 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
-public class WaterCollect : MonoBehaviour
+public class FireInteract : MonoBehaviour
 {
+    [SerializeField] GameObject fireEffect;
+
     bool playerNear;
     float holdTime;
     bool completedThisCycle;
@@ -18,6 +20,8 @@ public class WaterCollect : MonoBehaviour
         completedThisCycle = false;
         holdTime = 0f;
         enabled = true;
+        if (fireEffect != null)
+            fireEffect.SetActive(false);
     }
 
     void Update()
@@ -28,26 +32,40 @@ public class WaterCollect : MonoBehaviour
         if (ObjectiveManager.Instance == null)
             return;
 
-        if (!ObjectiveManager.Instance.HasObjective(ObjectiveType.Water))
+        if (!ObjectiveManager.Instance.HasObjective(ObjectiveType.Fire))
         {
             holdTime = 0f;
             return;
         }
 
-        if (Input.GetKey(KeyCode.F))
+        if (Input.GetKey(KeyCode.E))
         {
             holdTime += Time.deltaTime;
 
             if (holdTime >= 5f)
             {
-                ObjectiveManager.Instance.CompleteWater();
+                ObjectiveManager.Instance.CompleteFire();
+                if (fireEffect != null)
+                    fireEffect.SetActive(true);
+
                 completedThisCycle = true;
                 enabled = false;
             }
         }
 
-        if (Input.GetKeyUp(KeyCode.F))
+        if (Input.GetKeyUp(KeyCode.E))
             holdTime = 0f;
+    }
+
+    void LateUpdate()
+    {
+        if (!playerNear || completedThisCycle)
+            return;
+
+        if (ObjectiveManager.Instance == null || !ObjectiveManager.Instance.HasObjective(ObjectiveType.Fire))
+            return;
+
+        PromptManager.SubmitPromptCandidate("Hold E to start fire (5 s)", PromptManager.PrioritySurvivalHold);
     }
 
     void OnTriggerEnter(Collider other)
@@ -65,3 +83,4 @@ public class WaterCollect : MonoBehaviour
         holdTime = 0f;
     }
 }
+

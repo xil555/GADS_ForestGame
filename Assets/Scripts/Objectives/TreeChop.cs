@@ -52,6 +52,18 @@ public class TreeChop : MonoBehaviour
         }
     }
 
+    void LateUpdate()
+    {
+        if (choppedThisCycle)
+            return;
+
+        if (ObjectiveManager.Instance == null || !ObjectiveManager.Instance.HasObjective(ObjectiveType.Logs))
+            return;
+
+        if (CanAttemptChopThisTree())
+            PromptManager.SubmitPromptCandidate("Click to chop tree", PromptManager.PriorityTreeChopRay);
+    }
+
     bool CanAttemptChopThisTree()
     {
         if (playerNear)

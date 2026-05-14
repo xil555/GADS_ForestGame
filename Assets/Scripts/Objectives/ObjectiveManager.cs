@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
@@ -34,10 +35,29 @@ public class ObjectiveManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI waterTMP;
     [SerializeField] TextMeshProUGUI fenceTMP;
 
+    [Header("Daily Tasks UI — icons (optional; place beside TMP in layout)")]
+    [SerializeField] Image chopTreesIcon;
+    [SerializeField] Image mushroomIcon;
+    [SerializeField] Image fireIcon;
+    [SerializeField] Image waterIcon;
+    [SerializeField] Image fenceIcon;
+
+    [Header("Survival row icon sprites (optional; swaps with Completed / Incomplete)")]
+    [SerializeField] Sprite fireIncompleteSprite;
+    [SerializeField] Sprite fireCompleteSprite;
+    [SerializeField] Sprite waterIncompleteSprite;
+    [SerializeField] Sprite waterCompleteSprite;
+    [SerializeField] Sprite fenceIncompleteSprite;
+    [SerializeField] Sprite fenceCompleteSprite;
+
     [Header("Delivery visuals near house (start disabled in scene)")]
     [SerializeField] GameObject logCrateWithLogs;
     [SerializeField] GameObject mushroomCrateOrPile;
     [SerializeField] GameObject waterBarrels;
+
+    [Header("Daily Tasks panel root (optional)")]
+    [Tooltip("UI root only — do not parent world mushrooms or fence objects under this. Hidden when today's two tasks are complete; shown again on the next day.")]
+    [SerializeField] GameObject dailyTasksPanelRoot;
 
     ObjectiveType resourceObjective;
     ObjectiveType survivalObjective;
@@ -97,6 +117,7 @@ public class ObjectiveManager : MonoBehaviour
         {
             IsGameComplete = true;
             UpdateDayLabel();
+            RefreshDailyTasksPanelVisibility();
             return;
         }
 
@@ -244,6 +265,18 @@ public class ObjectiveManager : MonoBehaviour
         return resourceObjective == type || survivalObjective == type;
     }
 
+    /// <summary>False when the mushroom quota is reached for the day (or it is not a mushroom day).</summary>
+    public bool CanCollectMoreMushrooms()
+    {
+        return HasObjective(ObjectiveType.Mushroom) && mushroomsCollected < MushroomsRequired;
+    }
+
+    /// <summary>False once the fence survival task has been completed for the day.</summary>
+    public bool CanProgressFenceRepair()
+    {
+        return HasObjective(ObjectiveType.Fence) && !fenceComplete;
+    }
+
     public bool TryChopTree()
     {
         if (IsGameComplete)
@@ -346,27 +379,87 @@ public class ObjectiveManager : MonoBehaviour
 
     void UpdateUI()
     {
+        bool treesUseCompact = chopTreesIcon != null;
         if (chopTreesTMP != null)
         {
-            chopTreesTMP.text = treesChopped >= TreesRequired
-                ? "Chop Trees: Completed"
-                : $"Chop Trees: {treesChopped}/{TreesRequired}";
+            chopTreesTMP.text = treesUseCompact
+                ? $"{treesChopped} / {TreesRequired}"
+                : (treesChopped >= TreesRequired
+                    ? "Chop Trees: Completed"
+                    : $"Chop Trees: {treesChopped}/{TreesRequired}");
         }
 
+        bool mushroomsUseCompact = mushroomIcon != null;
         if (mushroomTMP != null)
         {
-            mushroomTMP.text = mushroomsCollected >= MushroomsRequired
-                ? "Collect Mushrooms: Completed"
-                : $"Collect Mushrooms: {mushroomsCollected}/{MushroomsRequired}";
+            mushroomTMP.text = mushroomsUseCompact
+                ? $"{mushroomsCollected} / {MushroomsRequired}"
+                : (mushroomsCollected >= MushroomsRequired
+                    ? "Collect Mushrooms: Completed"
+                    : $"Collect Mushrooms: {mushroomsCollected}/{MushroomsRequired}");
         }
 
         if (fireTMP != null)
-            fireTMP.text = fireComplete ? "Start Fire: Completed" : "Start Fire: Incomplete";
+        {
+            fireTMP.text = fireIcon != null
+                ? (fireComplete ? "Completed" : "Incomplete")
+                : (fireComplete ? "Start Fire: Completed" : "Start Fire: Incomplete");
+        }
 
         if (waterTMP != null)
-            waterTMP.text = waterComplete ? "Collect Water: Completed" : "Collect Water: Incomplete";
+        {
+            waterTMP.text = waterIcon != null
+                ? (waterComplete ? "Completed" : "Incomplete")
+                : (waterComplete ? "Collect Water: Completed" : "Collect Water: Incomplete");
+        }
 
         if (fenceTMP != null)
-            fenceTMP.text = fenceComplete ? "Repair Fence: Completed" : "Repair Fence: Incomplete";
+        {
+            fenceTMP.text = fenceIcon != null
+                ? (fenceComplete ? "Completed" : "Incomplete")
+                : (fenceComplete ? "Repair Fence: Completed" : "Repair Fence: Incomplete");
+        }
+
+        ApplySurvivalRowSprite(fireIcon, fireComplete, fireCompleteSprite, fireIncompleteSprite);
+        ApplySurvivalRowSprite(waterIcon, waterComplete, waterCompleteSprite, waterIncompleteSprite);
+        ApplySurvivalRowSprite(fenceIcon, fenceComplete, fenceCompleteSprite, fenceIncompleteSprite);
+
+        RefreshDailyTasksPanelVisibility();
+    }
+
+    void RefreshDailyTasksPanelVisibility()
+    {
+        if (dailyTasksPanelRoot == null)
+            return;
+
+        bool hide = IsGameComplete || AreCurrentDaysObjectivesComplete();
+        dailyTasksPanelRoot.SetActive(!hide);
+    }
+
+    bool AreCurrentDaysObjectivesComplete()
+    {
+        bool resourceOk = resourceObjective == ObjectiveType.Logs
+            ? treesChopped >= TreesRequired
+            : mushroomsCollected >= MushroomsRequired;
+
+        bool survivalOk = survivalObjective switch
+        {
+            ObjectiveType.Fire => fireComplete,
+            ObjectiveType.Water => waterComplete,
+            ObjectiveType.Fence => fenceComplete,
+            _ => false
+        };
+
+        return resourceOk && survivalOk;
+    }
+
+    static void ApplySurvivalRowSprite(Image icon, bool complete, Sprite whenComplete, Sprite whenIncomplete)
+    {
+        if (icon == null)
+            return;
+
+        Sprite chosen = complete ? whenComplete : whenIncomplete;
+        if (chosen != null)
+            icon.sprite = chosen;
     }
 }
