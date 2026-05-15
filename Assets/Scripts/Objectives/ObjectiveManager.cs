@@ -59,6 +59,15 @@ public class ObjectiveManager : MonoBehaviour
     [Tooltip("UI root only — do not parent world mushrooms or fence objects under this. Hidden when today's two tasks are complete; shown again on the next day.")]
     [SerializeField] GameObject dailyTasksPanelRoot;
 
+    [Header("Task completion SFX (optional)")]
+    [Tooltip("If null, one-shots play at the main camera position.")]
+    [SerializeField] AudioSource taskSfxSource;
+    [SerializeField] AudioClip logsTaskCompleteClip;
+    [SerializeField] AudioClip mushroomTaskCompleteClip;
+    [SerializeField] AudioClip fireTaskCompleteClip;
+    [SerializeField] AudioClip waterTaskCompleteClip;
+    [SerializeField] AudioClip fenceTaskCompleteClip;
+
     ObjectiveType resourceObjective;
     ObjectiveType survivalObjective;
 
@@ -291,7 +300,10 @@ public class ObjectiveManager : MonoBehaviour
         treesChopped++;
         UpdateUI();
         if (treesChopped >= TreesRequired)
+        {
             SetLogCrateVisible(true);
+            PlayTaskSfx(logsTaskCompleteClip);
+        }
 
         return true;
     }
@@ -310,7 +322,10 @@ public class ObjectiveManager : MonoBehaviour
         mushroomsCollected++;
         UpdateUI();
         if (mushroomsCollected >= MushroomsRequired)
+        {
             SetMushroomDeliveryVisible(true);
+            PlayTaskSfx(mushroomTaskCompleteClip);
+        }
 
         return true;
     }
@@ -325,6 +340,7 @@ public class ObjectiveManager : MonoBehaviour
 
         fireComplete = true;
         UpdateUI();
+        PlayTaskSfx(fireTaskCompleteClip);
     }
 
     public void CompleteWater()
@@ -338,6 +354,7 @@ public class ObjectiveManager : MonoBehaviour
         waterComplete = true;
         UpdateUI();
         SetWaterBarrelsVisible(true);
+        PlayTaskSfx(waterTaskCompleteClip);
     }
 
     public void CompleteFence()
@@ -350,6 +367,21 @@ public class ObjectiveManager : MonoBehaviour
 
         fenceComplete = true;
         UpdateUI();
+        PlayTaskSfx(fenceTaskCompleteClip);
+    }
+
+    void PlayTaskSfx(AudioClip clip)
+    {
+        if (clip == null)
+            return;
+
+        if (taskSfxSource != null)
+            taskSfxSource.PlayOneShot(clip);
+        else
+        {
+            Vector3 pos = Camera.main != null ? Camera.main.transform.position : Vector3.zero;
+            AudioSource.PlayClipAtPoint(clip, pos);
+        }
     }
 
     void SetDeliveryVisualsActive(bool active)
@@ -436,7 +468,7 @@ public class ObjectiveManager : MonoBehaviour
         dailyTasksPanelRoot.SetActive(!hide);
     }
 
-    bool AreCurrentDaysObjectivesComplete()
+    public bool AreCurrentDaysObjectivesComplete()
     {
         bool resourceOk = resourceObjective == ObjectiveType.Logs
             ? treesChopped >= TreesRequired
