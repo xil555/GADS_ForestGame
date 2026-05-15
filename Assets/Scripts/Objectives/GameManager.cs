@@ -1,5 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,21 +12,17 @@ public class GameManager : MonoBehaviour
     public GameObject dialoguePanel;
     public TextMeshProUGUI dialogueTextUI;
     public TMP_InputField playerInputField;
-    public GameObject gameOverPanel; 
-    public GameObject winPanel;      
 
     [Header("Interrogation Settings")]
     public int maxQuestions = 3;
     public KeyCode walkAwayKey = KeyCode.X;
 
     [Header("NPC Spawning System")]
-    [Tooltip("Assign your 5 NPC prefabs here in order of days (Day 1 = index 0, Day 5 = index 4)")]
     public GameObject[] npcPrefabs;
-    public Transform npcSpawnPoint;     
-    public Transform cabinDoorWaypoint; 
+    public Transform npcSpawnPoint;
+    public Transform cabinDoorWaypoint;
 
     [Header("Game Rules")]
-    [Tooltip("How many NPCs the player must beat to win the game.")]
     public int daysToWin = 3;
 
     [Header("Player Reference")]
@@ -43,15 +40,13 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         dialoguePanel.SetActive(false);
-        if (gameOverPanel != null) gameOverPanel.SetActive(false);
-        if (winPanel != null) winPanel.SetActive(false);
         playerInputField.gameObject.SetActive(false);
         playerInputField.onSubmit.AddListener(OnPlayerAsksQuestion);
     }
 
     void Update()
     {
-        if (gameEnded) return; 
+        if (gameEnded) return;
 
         
         if (ObjectiveManager.Instance != null && timeController != null)
@@ -65,11 +60,12 @@ public class GameManager : MonoBehaviour
 
         if (playerInputField.isFocused) return;
 
+        // CONVERSATION LOGIC
         if (isConversing)
         {
-            
             if (Input.GetKeyDown(walkAwayKey))
             {
+                CancelInvoke("ExitConversation");
                 ExitConversation();
                 return;
             }
@@ -84,16 +80,11 @@ public class GameManager : MonoBehaviour
 
     private void SpawnDailyNPC(int day)
     {
-        int index = day - 1; // Day 1 maps to Array Index 0
-
-        // Check if we have a prefab for today
+        int index = day - 1;
         if (index < npcPrefabs.Length && npcPrefabs[index] != null)
         {
-            // Instantiate the archetype
             activeNPC = Instantiate(npcPrefabs[index], npcSpawnPoint.position, Quaternion.identity);
             NPC npcScript = activeNPC.GetComponent<NPC>();
-
-            
             npcScript.cabinDoorWaypoint = cabinDoorWaypoint;
         }
     }
@@ -119,7 +110,7 @@ public class GameManager : MonoBehaviour
         {
             currentNPC.hasStartedConversation = true;
             currentNPC.conversationHistory = currentNPC.GetSystemPrompt() +
-                "\n\nThe player approaches the door. What is the very first thing you say to them? Keep it to one short sentence.";
+                "\n\nThe player approaches. What is the very first thing you say to them? Keep it to one short sentence.";
 
             dialogueTextUI.text = "<i>[Generating initial response...]</i>";
             ollama.GenerateDialogue(currentNPC.conversationHistory, DisplayDialogue);
@@ -177,9 +168,7 @@ public class GameManager : MonoBehaviour
         currentNPC.isDeadOrGone = true;
 
         bool isDead = false;
-        string exitPrompt = $"\n\n<i>(Press '{walkAwayKey}' to close and return to your tasks)</i>";
 
-        // THE SUDDEN DEATH LOGIC
         if (playerTrustedNPC && currentNPC.isDangerous)
         {
             dialogueTextUI.text = "<color=red>YOU TRUSTED THE WRONG PERSON... THEY KILL YOU.</color>";
@@ -187,49 +176,54 @@ public class GameManager : MonoBehaviour
         }
         else if (playerTrustedNPC && !currentNPC.isDangerous)
         {
-            dialogueTextUI.text = "<color=green>You gained an ally. You survive the day.</color>" + exitPrompt;
+            dialogueTextUI.text = "<color=green>You gained an ally. You survive the day.</color>\n\n<i>(Returning to tasks...)</i>";
         }
         else if (!playerTrustedNPC && currentNPC.isDangerous)
         {
-            dialogueTextUI.text = "<color=yellow>You locked them out. They leave you alone. You survive.</color>" + exitPrompt;
+            dialogueTextUI.text = "<color=yellow>You locked them out. They leave you alone. You survive.</color>\n\n<i>(Returning to tasks...)</i>";
         }
         else if (!playerTrustedNPC && !currentNPC.isDangerous)
         {
-            dialogueTextUI.text = "<color=orange>You turned away an innocent person. You survive, but at what cost?</color>" + exitPrompt;
+            dialogueTextUI.text = "<color=orange>You turned away an innocent person. You survive, but at what cost?</color>\n\n<i>(Returning to tasks...)</i>";
         }
 
         if (isDead)
         {
-            TriggerGameOver();
+            Invoke("LoadLoseScene", 3f); 
         }
         else
         {
-            // CHECK WIN CONDITION
-            if (ObjectiveManager.Instance.CurrentDay >= daysToWin)
+            if (ObjectiveManager.Instance != null && ObjectiveManager.Instance.CurrentDay >= daysToWin)
             {
-                TriggerWin();
+                dialogueTextUI.text += "\n\n<b>YOU SURVIVED ALL DAYS! YOU WIN!</b>";
+                Invoke("LoadWinScene", 2f);
             }
             else
             {
-                // If they survived today, the NPC vanishes to let them finish their tasks
-                Destroy(activeNPC, 2f);
+                if (activeNPC != null) Destroy(activeNPC, 2f);
+                Invoke("ExitConversation", 3.5f);
             }
         }
     }
 
-    private void TriggerGameOver()
+
+
+    private void LoadLoseScene()
     {
         gameEnded = true;
-        dialoguePanel.SetActive(false);
-        if (gameOverPanel != null) gameOverPanel.SetActive(true);
-        
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        SceneManager.LoadScene("Lose");
     }
 
-    private void TriggerWin()
+    private void LoadWinScene()
     {
         gameEnded = true;
-        dialoguePanel.SetActive(false);
-        if (winPanel != null) winPanel.SetActive(true);
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        SceneManager.LoadScene("Win");
     }
 
     private void ExitConversation()
