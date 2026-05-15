@@ -127,8 +127,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8817766cf9d22a94c9cbdefc6f268d17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPC
-  npcName: 
-  systemPrompt: 
+  npcName: Panicked Explorer
+  systemPrompt: You are a panicked person running from wild animals you heard in
+    the brush. You are completely safe to let in, but your erratic, fearful behavior
+    makes you seem highly suspicious. Focus on the noises you heard outside and begging
+    to come in quickly. Answer in one short, frantic sentence.
   isDangerous: 0
   walkSpeed: 2
   cabinDoorWaypoint: {fileID: 0}

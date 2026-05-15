@@ -128,11 +128,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPC
   npcName: Injured Hiker
-  systemPrompt: 'You are an injured hiker seeking shelter in a forest cabin. You
-    are secretly a dangerous threat, but you must hide this from the player. The
-    player asks: ''Who are you and what do you want?''. Answer in one short, convincing
-    sentence.'
-  isDangerous: 0
+  systemPrompt: You are a hiker with a badly sprained ankle seeking shelter at a
+    cabin. You are secretly dangerous, but hide this completely. Focus only on the
+    physical pain in your leg and needing to sit down. Do not over-explain or invent
+    a long backstory. Answer the player's questions in one short, curt sentence.
+  isDangerous: 1
   walkSpeed: 2
   cabinDoorWaypoint: {fileID: 0}
   conversationHistory: 

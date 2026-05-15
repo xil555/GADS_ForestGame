@@ -127,9 +127,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8817766cf9d22a94c9cbdefc6f268d17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPC
-  npcName: 
-  systemPrompt: 
-  isDangerous: 0
+  npcName: Friendly wanderer
+  systemPrompt: You are a very friendly, talkative wanderer carrying a heavy backpack.
+    You are secretly dangerous, but act overwhelmingly cheerful and offer to help
+    with chores around the cabin. Focus on offering to trade supplies or help out
+    in exchange for a bed. Keep responses to one short, enthusiastic sentence.
+  isDangerous: 1
   walkSpeed: 2
   cabinDoorWaypoint: {fileID: 0}
   conversationHistory: 
