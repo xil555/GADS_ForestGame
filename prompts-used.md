@@ -1,10 +1,10 @@
 # Prompt Archive
 
 ## Core Dialogue Manager Prompt Structure
-To maintain memory during the interrogation, the system dynamically appends to a `conversationHistory` string.
+To maintain memory during the interrogation, the system dynamically appends to a `conversationHistory` string inside the `GameManager`.
 
 **Base Initial Prompt:**
-`[NPC SYSTEM PROMPT] + "\n\nThe player approaches the door. What is the very first thing you say to them? Keep it to one short sentence."`
+`[NPC SYSTEM PROMPT] + "\n\nThe player approaches. What is the very first thing you say to them? Keep it to one short sentence."`
 
 **Follow-up Question Prompt Structure:**
 `[CONVERSATION HISTORY] + "\nPlayer asks: [USER INPUT]\nNPC responds (keep it to one short sentence):"`
