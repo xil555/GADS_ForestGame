@@ -36,4 +36,3 @@
 * **Surprise:** It was surprising that the raw novelty of an LLM-driven NPC wasn't enough to carry the narrative framework completely; players felt lost without prompt examples.
 * **Agreement:** The critique regarding the separate player guide and abrupt death loop is entirely valid. Our current state machine simply cuts the game thread without setting a data string for the UI text to read.
 * **Concern:** Tuning movement responsiveness in Unity's Physics2D system might require altering fixed update cycles, which could destabilize asset tracking loops if not managed carefully.
-

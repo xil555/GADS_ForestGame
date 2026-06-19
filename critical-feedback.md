@@ -22,6 +22,10 @@ Given our local inference constraints using Ollama, modifying text processing sp
 Adding progressive loading indicators to task executions and building dynamic strings into the Game Over screen are highly feasible within Unity. These adjustments directly target high-impact UX clarity without threatening the stability of our active state machines.
 
 ## Final Judgement
-Our feedback loop will directly dictate two major branches of refinement for our final build. First, we will implement a visual task progress bar to ground the player during physical activities. Second, we will overhaul the failure state to ensure the death screen pulls diagnostic variables from the event manager, explicitly informing players why they failed. 
+Our feedback loop has directly dictated our strategy for project refinement, forcing us to make deliberate, professional choices regarding what to execute and what to cut to protect our scope. 
 
-Conversely, ambient hazard systems and in-game tutorial databases are rejected due to technical scope limits. Ultimately, this testing phase has reshaped our perspective on AI game workflows. It proved to our group that advanced emergent systems like LLMs cannot stand alone; they rely heavily on traditional game feel, clear UI design, and explicit feedback loops to achieve meaningful player engagement.
+We chose to implement the movement smoothing refactor, the diagnostic failure screen, and the task progress bar for the correct design reasons: they directly target critical user experience blind spots, massively elevate the "game feel," and restore structural framing to our emergent local AI systems. These high-impact adjustments explicitly address the friction points raised by both our casual and industry playtesters without breaking our existing software architecture.
+
+Conversely, we officially chose to scrap the environmental fire damage systems and the extensive in-game tutorial databases due to strict time constraints. Attempting to re-engineer core player controllers or reconstruct massive UI asset pipelines within the remaining project window would result in feature creep and compromise the stability of our active build. 
+
+Ultimately, this testing phase has reshaped our perspective on AI game workflows. It proved to our group that advanced emergent systems like LLMs cannot stand alone; they rely heavily on traditional game feel, clear UI feedback, and disciplined scope management to achieve meaningful player engagement.
