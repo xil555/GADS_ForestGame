@@ -12,7 +12,6 @@ public class GameManager : MonoBehaviour
     public GameObject dialoguePanel;
     public TextMeshProUGUI dialogueTextUI;
     public TMP_InputField playerInputField;
-    public GameOverUI gameOverUI;
 
     [Header("Interrogation Settings")]
     public int maxQuestions = 3;
@@ -222,12 +221,8 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        if (gameOverUI != null)
-            gameOverUI.ShowGameOver(pendingFailureReason);
-        else if (GameOverUI.Instance != null)
-            GameOverUI.Instance.ShowGameOver(pendingFailureReason);
-
-        Invoke(nameof(LoadLoseScene), 3f);
+        GameOverUI.QueueFailureReason(pendingFailureReason);
+        LoadLoseScene();
     }
 
     private void LoadLoseScene()

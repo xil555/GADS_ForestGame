@@ -11,9 +11,9 @@ public class MainMenu : MonoBehaviour
     }
     public void MainMenuScene()
     {
-        //  Lock cursor when entering game
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
         SceneManager.LoadScene("MainMenu");
     }
@@ -45,7 +45,11 @@ public class MainMenu : MonoBehaviour
 
     public void QuitGame()
     {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
         Application.Quit();
+#endif
         Debug.Log("Quit Game");
     }
 }

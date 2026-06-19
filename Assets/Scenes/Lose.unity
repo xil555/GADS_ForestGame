@@ -457,6 +457,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1319338283}
   - component: {fileID: 1319338282}
+  - component: {fileID: 1319338284}
   m_Layer: 0
   m_Name: UI Manager
   m_TagString: Untagged
@@ -491,6 +492,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1319338284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1319338281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7349b10097ea378428321ccf71680b46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameOverUI
+  gameOverPanel: {fileID: 2183357854200898834}
+  failureReasonText: {fileID: 1319614929}
 --- !u!1 &1319614927
 GameObject:
   m_ObjectHideFlags: 0
@@ -525,8 +540,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 54, y: 20}
-  m_SizeDelta: {x: 481.2471, y: 50}
+  m_AnchoredPosition: {x: 36, y: 20}
+  m_SizeDelta: {x: 600, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1319614929
 MonoBehaviour:
@@ -812,6 +827,18 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1319338282}
+    - target: {fileID: 3202496114743405605, guid: 2d96bff4b763714488445d0c1d0a61ff, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: QuitGame
+      objectReference: {fileID: 0}
+    - target: {fileID: 3527477959483009499, guid: 2d96bff4b763714488445d0c1d0a61ff, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 36
+      objectReference: {fileID: 0}
+    - target: {fileID: 3527477959483009499, guid: 2d96bff4b763714488445d0c1d0a61ff, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 161
+      objectReference: {fileID: 0}
     - target: {fileID: 3809866422759039519, guid: 2d96bff4b763714488445d0c1d0a61ff, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -819,6 +846,14 @@ PrefabInstance:
     - target: {fileID: 4208792058334139380, guid: 2d96bff4b763714488445d0c1d0a61ff, type: 3}
       propertyPath: m_Name
       value: GameOverPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 4998274825649723163, guid: 2d96bff4b763714488445d0c1d0a61ff, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 9043701427143003050, guid: 2d96bff4b763714488445d0c1d0a61ff, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -155
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

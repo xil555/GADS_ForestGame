@@ -1,14 +1,16 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
-
-// Drives the Game Over canvas: sets failure copy, then activates the panel.
-// Assign the panel root and a TextMeshProUGUI for the death reason.
+/// <summary>
+/// Lives on the Lose scene. <see cref="GameManager"/> calls <see cref="QueueFailureReason"/>
+/// before loading that scene; this component shows the queued message on start.
+/// </summary>
 public class GameOverUI : MonoBehaviour
 {
     public static GameOverUI Instance { get; private set; }
 
-    //Last reason shown; survives scene load so the Lose scene can display it.
+    /// <summary>Failure copy passed from the game scene before the Lose scene loads.</summary>
     public static string LastFailureReason { get; private set; }
 
     static readonly string[] TrustedWrongPersonMessages =
@@ -30,13 +32,18 @@ public class GameOverUI : MonoBehaviour
         }
 
         Instance = this;
-        HideGameOverImmediate();
     }
 
     void Start()
     {
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
         if (!string.IsNullOrEmpty(LastFailureReason))
             ShowGameOver(LastFailureReason);
+        else
+            HideGameOverImmediate();
     }
 
     void OnDestroy()
@@ -50,25 +57,37 @@ public class GameOverUI : MonoBehaviour
         return TrustedWrongPersonMessages[Random.Range(0, TrustedWrongPersonMessages.Length)];
     }
 
-    //Update failure text, then show the Game Over panel.</summary>
+    /// <summary>Call from the game scene before loading the Lose scene.</summary>
+    public static void QueueFailureReason(string failureReason)
+    {
+        LastFailureReason = ResolveMessage(failureReason);
+    }
+
+    /// <summary>Update failure text, then show the Game Over panel in this scene.</summary>
     public void ShowGameOver(string failureReason)
     {
-        string message = string.IsNullOrWhiteSpace(failureReason)
-            ? GetRandomTrustedWrongPersonMessage()
-            : failureReason;
-
-        LastFailureReason = message;
+        LastFailureReason = ResolveMessage(failureReason);
 
         if (failureReasonText != null)
-            failureReasonText.text = message;
+            failureReasonText.text = LastFailureReason;
 
         if (gameOverPanel != null)
+        {
+            SetPanelRaycastsForDisplayOnly(gameOverPanel);
             gameOverPanel.SetActive(true);
+        }
     }
 
     public void HideGameOver()
     {
         HideGameOverImmediate();
+    }
+
+    static string ResolveMessage(string failureReason)
+    {
+        return string.IsNullOrWhiteSpace(failureReason)
+            ? GetRandomTrustedWrongPersonMessage()
+            : failureReason;
     }
 
     void HideGameOverImmediate()
@@ -78,5 +97,17 @@ public class GameOverUI : MonoBehaviour
 
         if (failureReasonText != null)
             failureReasonText.text = string.Empty;
+    }
+
+    /// <summary>Keep failure copy visible without blocking Main Menu / Quit buttons underneath.</summary>
+    static void SetPanelRaycastsForDisplayOnly(GameObject panel)
+    {
+        foreach (var graphic in panel.GetComponentsInChildren<Graphic>(true))
+        {
+            if (graphic.GetComponentInParent<Button>() != null)
+                continue;
+
+            graphic.raycastTarget = false;
+        }
     }
 }
