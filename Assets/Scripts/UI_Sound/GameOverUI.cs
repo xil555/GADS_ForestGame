@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 /// <summary>
@@ -42,8 +43,8 @@ public class GameOverUI : MonoBehaviour
 
         if (!string.IsNullOrEmpty(LastFailureReason))
             ShowGameOver(LastFailureReason);
-        else
-            HideGameOverImmediate();
+        else if (gameOverPanel != null)
+            SetPanelRaycastsForDisplayOnly(gameOverPanel);
     }
 
     void OnDestroy()
@@ -81,6 +82,26 @@ public class GameOverUI : MonoBehaviour
     public void HideGameOver()
     {
         HideGameOverImmediate();
+    }
+
+    /// <summary>Wire the Lose scene Main Menu button to this (on UI Manager).</summary>
+    public void ReturnToMainMenu()
+    {
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        LastFailureReason = null;
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    /// <summary>Wire the Lose scene Quit button to this (on UI Manager).</summary>
+    public void QuitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 
     static string ResolveMessage(string failureReason)
