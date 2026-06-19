@@ -1,9 +1,9 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 /// <summary>
 /// Hold E at a fence segment while the fence objective is active. Only the closest eligible segment
 /// receives input so overlapping zones do not fight. Proximity uses trigger and/or distance so
-/// CharacterController-only players still register. Repair only swaps visuals on this object —
+/// CharacterController-only players still register. Repair only swaps visuals on this object ï¿½
 /// the root is never deactivated so other fence pieces stay in the scene.
 /// </summary>
 [RequireComponent(typeof(Collider))]
@@ -134,6 +134,7 @@ public class FenceRepair : MonoBehaviour
         if (Input.GetKey(KeyCode.E))
         {
             holdTime += Time.deltaTime;
+            TaskProgressUI.SubmitHoldProgress(holdTime);
 
             if (holdTime >= 5f)
             {

@@ -41,6 +41,7 @@ public class FireInteract : MonoBehaviour
         if (Input.GetKey(KeyCode.E))
         {
             holdTime += Time.deltaTime;
+            TaskProgressUI.SubmitHoldProgress(holdTime);
 
             if (holdTime >= 5f)
             {

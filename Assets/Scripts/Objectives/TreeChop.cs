@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -14,6 +15,9 @@ public class TreeChop : MonoBehaviour
     bool playerNear;
     bool choppedThisCycle;
     Transform playerRoot;
+    Vector3 initialLocalScale;
+    Vector3 initialLocalPosition;
+    bool cachedTransform;
 
     void Reset()
     {
@@ -21,11 +25,32 @@ public class TreeChop : MonoBehaviour
         c.isTrigger = true;
     }
 
+    void CacheTransformIfNeeded()
+    {
+        if (cachedTransform)
+            return;
+
+        initialLocalScale = transform.localScale;
+        initialLocalPosition = transform.localPosition;
+        cachedTransform = true;
+    }
+
+    void RestoreTransformAndColliders()
+    {
+        CacheTransformIfNeeded();
+        transform.localScale = initialLocalScale;
+        transform.localPosition = initialLocalPosition;
+
+        foreach (var c in GetComponentsInChildren<Collider>())
+            c.enabled = true;
+    }
+
     public void ResetForNewDay()
     {
         choppedThisCycle = false;
         gameObject.SetActive(true);
         enabled = true;
+        RestoreTransformAndColliders();
     }
 
     void Update()
@@ -48,7 +73,7 @@ public class TreeChop : MonoBehaviour
         if (ObjectiveManager.Instance.TryChopTree())
         {
             choppedThisCycle = true;
-            gameObject.SetActive(false);
+            StartCoroutine(PlayChopFeedback());
         }
     }
 
@@ -115,5 +140,14 @@ public class TreeChop : MonoBehaviour
             return;
 
         playerNear = false;
+    }
+
+    IEnumerator PlayChopFeedback()
+    {
+        CacheTransformIfNeeded();
+        CollectJuice.DisableColliders(transform);
+        yield return CollectJuice.ShrinkAndRise(transform);
+        RestoreTransformAndColliders();
+        gameObject.SetActive(false);
     }
 }

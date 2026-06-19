@@ -50,7 +50,8 @@ public class CabinDoorInteract : MonoBehaviour
         if (!IsPlayerInRange())
             return;
 
-        PromptManager.SubmitPromptCandidate("Press E to interact", PromptManager.PriorityDoor);
+        // Pass a literal integer value if your PromptManager handles priorities as ints
+        PromptManager.SubmitPromptCandidate("Press E to interact", 1);
     }
 
     bool IsPlayerInRange()

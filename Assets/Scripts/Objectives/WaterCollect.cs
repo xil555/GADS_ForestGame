@@ -37,6 +37,7 @@ public class WaterCollect : MonoBehaviour
         if (Input.GetKey(KeyCode.F))
         {
             holdTime += Time.deltaTime;
+            TaskProgressUI.SubmitHoldProgress(holdTime);
 
             if (holdTime >= 5f)
             {

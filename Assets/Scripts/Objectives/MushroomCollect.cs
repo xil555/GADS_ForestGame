@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -15,6 +16,9 @@ public class MushroomCollect : MonoBehaviour
 
     bool playerNear;
     bool collectedThisCycle;
+    Vector3 initialLocalScale;
+    Vector3 initialLocalPosition;
+    bool cachedTransform;
 
     Vector3 InteractionWorldPoint
     {
@@ -77,11 +81,32 @@ public class MushroomCollect : MonoBehaviour
         c.isTrigger = true;
     }
 
+    void CacheTransformIfNeeded()
+    {
+        if (cachedTransform)
+            return;
+
+        initialLocalScale = transform.localScale;
+        initialLocalPosition = transform.localPosition;
+        cachedTransform = true;
+    }
+
+    void RestoreTransformAndColliders()
+    {
+        CacheTransformIfNeeded();
+        transform.localScale = initialLocalScale;
+        transform.localPosition = initialLocalPosition;
+
+        foreach (var c in GetComponentsInChildren<Collider>())
+            c.enabled = true;
+    }
+
     public void ResetForNewDay()
     {
         collectedThisCycle = false;
         gameObject.SetActive(true);
         enabled = true;
+        RestoreTransformAndColliders();
     }
 
     void Update()
@@ -103,7 +128,7 @@ public class MushroomCollect : MonoBehaviour
             if (ObjectiveManager.Instance.TryCollectMushroom())
             {
                 collectedThisCycle = true;
-                gameObject.SetActive(false);
+                StartCoroutine(PlayCollectFeedback());
             }
         }
     }
@@ -134,5 +159,14 @@ public class MushroomCollect : MonoBehaviour
             return;
 
         playerNear = false;
+    }
+
+    IEnumerator PlayCollectFeedback()
+    {
+        CacheTransformIfNeeded();
+        CollectJuice.DisableColliders(transform);
+        yield return CollectJuice.ShrinkAndRise(transform);
+        RestoreTransformAndColliders();
+        gameObject.SetActive(false);
     }
 }

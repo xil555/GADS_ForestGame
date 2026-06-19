@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public GameObject dialoguePanel;
     public TextMeshProUGUI dialogueTextUI;
     public TMP_InputField playerInputField;
+    public GameOverUI gameOverUI;
 
     [Header("Interrogation Settings")]
     public int maxQuestions = 3;
@@ -34,6 +35,7 @@ public class GameManager : MonoBehaviour
     private bool isShowingOutcome = false;
     private bool gameEnded = false;
     private int lastSpawnedDay = 0;
+    private string pendingFailureReason;
 
     public bool IsConversing() { return isConversing; }
 
@@ -48,7 +50,7 @@ public class GameManager : MonoBehaviour
     {
         if (gameEnded) return;
 
-        
+
         if (ObjectiveManager.Instance != null && timeController != null)
         {
             if (ObjectiveManager.Instance.CurrentDay != lastSpawnedDay && timeController.CurrentTime.TimeOfDay.TotalHours >= 13f)
@@ -189,7 +191,8 @@ public class GameManager : MonoBehaviour
 
         if (isDead)
         {
-            Invoke("LoadLoseScene", 3f); 
+            pendingFailureReason = GameOverUI.GetRandomTrustedWrongPersonMessage();
+            Invoke(nameof(TriggerGameOver), 2f);
         }
         else
         {
@@ -207,6 +210,25 @@ public class GameManager : MonoBehaviour
     }
 
 
+
+    private void TriggerGameOver()
+    {
+        gameEnded = true;
+        isConversing = false;
+
+        dialoguePanel.SetActive(false);
+        playerInputField.gameObject.SetActive(false);
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        if (gameOverUI != null)
+            gameOverUI.ShowGameOver(pendingFailureReason);
+        else if (GameOverUI.Instance != null)
+            GameOverUI.Instance.ShowGameOver(pendingFailureReason);
+
+        Invoke(nameof(LoadLoseScene), 3f);
+    }
 
     private void LoadLoseScene()
     {
